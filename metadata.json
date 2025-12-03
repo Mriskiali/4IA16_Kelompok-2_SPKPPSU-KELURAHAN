@@ -1,0 +1,8 @@
+{
+  "name": "SPKPPSU Rawamangun",
+  "description": "Sistem Pelaporan Kerja PPSU Kelurahan Rawamangun. Aplikasi pelaporan terpusat untuk petugas dan dashboard monitoring untuk admin.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
