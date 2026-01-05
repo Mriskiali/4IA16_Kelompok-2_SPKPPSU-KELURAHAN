@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { getGeolocationErrorMessage, requestGeolocation } from '../lib/geolocation';
 
 interface Location {
   lat: number;
@@ -137,51 +138,25 @@ const MapPicker: React.FC<MapPickerProps> = ({
     setIsLocating(true);
     setAddress("Mendeteksi lokasi GPS...");
     
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const latLng: [number, number] = [latitude, longitude];
+    requestGeolocation(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const latLng: [number, number] = [latitude, longitude];
 
-          mapRef.current.setView(latLng, 18);
-          markerRef.current.setLatLng(latLng);
-          setPosition(latLng);
+        mapRef.current.setView(latLng, 18);
+        markerRef.current.setLatLng(latLng);
+        setPosition(latLng);
 
-          await reverseGeocode(latitude, longitude);
-          setIsLocating(false);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          let errorMessage = "Gagal mendeteksi lokasi.";
-          
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "Izin lokasi ditolak. Silakan aktifkan izin lokasi di pengaturan browser.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "Informasi lokasi tidak tersedia.";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "Waktu permintaan lokasi habis.";
-              break;
-            default:
-              errorMessage = "Terjadi kesalahan yang tidak diketahui.";
-              break;
-          }
-          
-          setAddress(errorMessage);
-          setIsLocating(false);
-        },
-        { 
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 60000
-        }
-      );
-    } else {
-      setAddress("GPS tidak didukung di browser ini.");
-      setIsLocating(false);
-    }
+        await reverseGeocode(latitude, longitude);
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        const errorMessage = getGeolocationErrorMessage(error);
+        setAddress(errorMessage);
+        setIsLocating(false);
+      }
+    );
   };
 
   useEffect(() => {

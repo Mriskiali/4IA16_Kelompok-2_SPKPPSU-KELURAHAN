@@ -31,7 +31,7 @@ Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan pr
 
 ---
 
-## 🛠 Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 *   **Frontend**: React 18, TypeScript, Vite.
 *   **Styling**: Tailwind CSS (Utility-first framework).
