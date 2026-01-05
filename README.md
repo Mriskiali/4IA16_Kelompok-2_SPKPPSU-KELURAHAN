@@ -1,35 +1,33 @@
 
-# 🧹 SPKPPSU Kelurahan Rawamangun
+# SPKPPSU Kelurahan
 
 **Sistem Pelaporan Kerja PPSU (Penanganan Prasarana dan Sarana Umum)**
 
-Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan proses pelaporan kinerja petugas PPSU di Kelurahan Rawamangun. Aplikasi ini mendukung pelaporan lapangan berbasis lokasi (GPS) dan pemantauan real-time oleh admin.
-
-![Status](https://img.shields.io/badge/Status-Ready%20to%20Deploy-success)
-![Tech](https://img.shields.io/badge/Stack-React%20%7C%20Vite%20%7C%20Supabase-blue)
+Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan proses pelaporan kinerja petugas PPSU di Kelurahan. Aplikasi ini mendukung pelaporan lapangan berbasis lokasi (GPS) dan pemantauan real-time oleh admin.
 
 ---
 
-## 🌟 Fitur Unggulan
+## Fitur Unggulan
 
-### 👷 Modul Petugas (Mobile First)
-*   **📍 Absensi & Lokasi Real-time**: Menggunakan **Leaflet Maps** & GPS bawaan HP untuk mendeteksi lokasi kerja secara akurat (Reverse Geocoding: Koordinat -> Nama Jalan).
-*   **📸 Laporan Visual**: Ambil foto langsung dari kamera aplikasi atau upload dari galeri.
-*   **🔄 Perbaikan Laporan (Resubmit)**: Fitur "Perbaiki & Kirim Ulang" untuk laporan yang ditolak admin, tanpa perlu mengetik ulang data dari awal.
-*   **👤 Manajemen Profil Mandiri**: Edit foto profil (disimpan sebagai Base64) dan ubah kata sandi dengan aman.
-*   **📜 Riwayat & Filter**: Timeline laporan yang dikelompokkan per tanggal dengan filter status/kategori.
+### Modul Petugas (Mobile First)
+*   ** Absensi & Lokasi Real-time**: Menggunakan **Leaflet Maps** & GPS bawaan HP untuk mendeteksi lokasi kerja secara akurat (Reverse Geocoding: Koordinat -> Nama Jalan).
+*   ** Laporan Visual**: Ambil foto langsung dari kamera aplikasi atau upload dari galeri.
+*   ** Perbaikan Laporan (Resubmit)**: Fitur "Perbaiki & Kirim Ulang" untuk laporan yang ditolak admin, tanpa perlu mengetik ulang data dari awal.
+*   ** Manajemen Profil Mandiri**: Edit foto profil (disimpan sebagai Base64) dan ubah kata sandi dengan aman.
+*   ** Riwayat & Filter**: Timeline laporan yang dikelompokkan per tanggal dengan filter status/kategori.
 
-### 👨‍💼 Modul Admin (Dashboard)
-*   **📊 Dashboard Analitik**: Statistik kinerja total, grafik batang, dan "Leaderboard" petugas paling rajin.
-*   **📝 Verifikasi Laporan**:
+###  Modul Admin (Dashboard)
+*   ** Dashboard Analitik Lanjutan**: Statistik kinerja total, grafik batang, dan "Leaderboard" petugas paling rajin dengan tampilan tab-based untuk navigasi antar fungsi.
+*   ** Verifikasi Laporan**:
     *   List view responsif (nyaman di Desktop & Mobile).
     *   Filter canggih: Berdasarkan Petugas, Tanggal, dan Status.
     *   Modal Detail: Lihat bukti foto resolusi penuh & peta lokasi.
     *   **Tolak dengan Alasan**: Memberikan feedback spesifik kenapa laporan ditolak.
-*   **👥 Manajemen User**:
+*   ** Manajemen User**:
     *   CRUD Petugas (Tambah, Edit, Nonaktifkan).
     *   **Hapus Permanen (Hard Delete)**: Menghapus akun beserta seluruh riwayat laporannya dari database (Safety Confirmation).
-*   **📥 Ekspor Data**: Download rekap laporan ke format `.csv` untuk arsip kelurahan.
+*   ** Ekspor Data**: Download rekap laporan ke format `.csv` dan `.pdf` untuk arsip kelurahan.
+*   ** Statistik & Analitik**: Tampilan visual statistik laporan berdasarkan status dan kategori bawaan, serta kinerja petugas dalam bentuk grafik dan tabel.
 
 ---
 
@@ -42,26 +40,38 @@ Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan pr
 *   **Icons**: Lucide React.
 *   **Charts**: Recharts.
 
+
 ---
 
-## 📂 Struktur Folder
+## Struktur Folder
 
 ```text
 spkppsu-rawamangun/
-├── components/       # Komponen UI Reusable (Layout, Toast)
+├── components/       # Komponen UI Reusable (Layout, Toast, Statistik)
 ├── context/          # State Management Global (Auth, Data, Notifikasi)
-├── lib/              # Konfigurasi Client Supabase
+├── Dokumentasi/      # Dokumentasi Teknis, Panduan, dan Laporan Lama
+├── Dokumentasi1/     # Dokumentasi Teknis, Panduan, dan Laporan Baru
+├── lib/              # Library dan fungsi bantuan (export laporan)
 ├── pages/            # Halaman Aplikasi
 │   ├── admin/        # Dashboard, Kelola Laporan, Kelola User
 │   └── petugas/      # Home, Buat Laporan, Riwayat, Profil
 ├── public/           # Aset statis & konfigurasi redirect Netlify
 ├── types.ts          # Definisi Tipe TypeScript (Interface User, Report)
-└── constants.ts      # Mock Data (untuk mode offline)
+├── constants.ts      # Konstanta aplikasi
+└── utils/            # Fungsi-fungsi utilitas
 ```
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan (Lokal)
+## Akses Aplikasi (Deployment Live)
+
+Aplikasi ini telah dideploy ke platform Vercel dan dapat diakses secara publik:
+
+**(...)**
+
+---
+
+## Panduan Instalasi & Menjalankan (Lokal)
 
 ### 1. Prasyarat
 *   Node.js (versi 16+)
@@ -70,10 +80,10 @@ spkppsu-rawamangun/
 ### 2. Instalasi Dependensi
 ```bash
 # Clone repository (jika dari git)
-git clone https://github.com/Mriskiali/SPKPPSU-Rawamangun.git
+git clone ...
 
 # Masuk ke folder
-cd spkppsu-rawamangun
+cd spkppsu-kelurahan
 
 # Install library
 npm install
@@ -147,15 +157,34 @@ Akses di browser: `http://localhost:5173`
 
 ---
 
-## 🛡 Mode Offline / Mock Data
 
-Jika Anda **tidak** mengatur file `.env` atau koneksi internet mati, aplikasi otomatis berjalan dalam **Mode Mock**. Data tidak akan disimpan ke database, tapi Anda tetap bisa mencoba fitur UI.
+## Dokumentasi Lengkap
 
-**Akun Login Default (Mode Mock):**
-*   **Admin**: `admin` / `admin`
-*   **Petugas**: `50422231` / `password123`
+*   [Proposal Penawaran](./Dokumentasi/Proposal_Penawaran.md) - Gambaran umum, metode RPL, dan timeline pengerjaan
+*   [Laporan Pendahuluan](./Dokumentasi/Laporan_Pendahuluan.md) - Latar belakang, tujuan, dan ruang lingkup proyek
+*   [Laporan Antara](./Dokumentasi/Laporan_Antara.md) - Progres pengembangan hingga tahap tengah
+*   [Laporan Akhir](./Dokumentasi/Laporan_Akhir.md) - Hasil akhir proyek dan panduan penggunaan sistem
 
 ---
 
-## 📄 Lisensi
-MIT License. Dibuat untuk Kelurahan Rawamangun.
+## Deployment
+
+Aplikasi telah berhasil dideploy ke platform Vercel:
+*   **Alamat Akses**: [...)
+*   **Build Command**: `npm run build`
+*   **Output Directory**: `dist`
+*   **Framework**: Terdeteksi otomatis sebagai React/Vite
+*   **Environment Variables**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+
+Deployment dilakukan secara otomatis ketika ada perubahan di repository, memastikan versi terbaru selalu tersedia untuk pengguna.
+
+## Penutup
+
+SPKPPSU Kelurahan telah berhasil dikembangkan dengan fokus pada kemudahan penggunaan, performa, dan antarmuka yang responsif. Sistem ini menyediakan alat yang efektif bagi petugas lapangan untuk membuat laporan dengan cepat dan akurat, serta memberikan administrator alat untuk mengelola dan meninjau laporan secara efisien.
+
+Fitur-fitur unggulan seperti pemilihan lokasi interaktif seperti di Gojek, sistem notifikasi real-time, antarmuka yang responsif serta optimasi performa membuat sistem ini sangat berguna untuk penggunaan sehari-hari dalam pengelolaan pelayanan umum di Kelurahan.
+
+---
+
+## Lisensi
+MIT License. Dibuat untuk Kelurahan.

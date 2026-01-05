@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Login } from './pages/Login';
 import { Layout } from './components/Layout';
+
 import { Role } from './types';
 import { PetugasHome } from './pages/petugas/Home';
 import { CreateReport } from './pages/petugas/CreateReport';
@@ -13,7 +14,7 @@ import { ManageUsers } from './pages/admin/ManageUsers';
 
 const AppContent: React.FC = () => {
   const { auth } = useApp();
-  const [currentPage, setCurrentPage] = useState<string>('login');
+  const [currentPage, setCurrentPage] = React.useState<string>('login');
 
   const handleLoginSuccess = (role: Role) => {
     if (role === Role.ADMIN) {
@@ -28,17 +29,15 @@ const AppContent: React.FC = () => {
       case 'login':
         return <Login onSuccess={handleLoginSuccess} />;
       
-      // Petugas Routes
       case 'petugas-home':
         return <PetugasHome navigate={setCurrentPage} />;
       case 'petugas-create':
         return <CreateReport navigate={setCurrentPage} />;
       case 'petugas-history':
-        return <PetugasHistory navigate={setCurrentPage} />; // Pass navigate
+        return <PetugasHistory navigate={setCurrentPage} />;
       case 'petugas-profile':
         return <PetugasProfile />;
-
-      // Admin Routes
+      
       case 'admin-dashboard':
         return <AdminDashboard />;
       case 'admin-reports':

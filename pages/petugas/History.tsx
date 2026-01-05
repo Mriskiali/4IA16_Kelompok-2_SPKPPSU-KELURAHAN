@@ -7,18 +7,15 @@ import { Report, ReportStatus, ReportCategory } from '../../types';
 export const PetugasHistory: React.FC<{ navigate?: (p: string) => void }> = ({ navigate }) => {
   const { reports, auth, setActiveDraft } = useApp();
   
-  // Filter States
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ReportStatus | 'ALL'>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<ReportCategory | 'ALL'>('ALL');
   const [dateFilter, setDateFilter] = useState('');
   
-  // Pagination State
   const [displayCount, setDisplayCount] = useState(10);
 
   const myReports = reports.filter(r => r.userId === auth.user?.id);
 
-  // Apply Filters
   const filteredReports = myReports.filter(report => {
     if (statusFilter !== 'ALL' && report.status !== statusFilter) return false;
     if (categoryFilter !== 'ALL' && report.category !== categoryFilter) return false;
@@ -29,7 +26,6 @@ export const PetugasHistory: React.FC<{ navigate?: (p: string) => void }> = ({ n
     return true;
   });
 
-  // Group Reports by Date
   const groupedReports = filteredReports.slice(0, displayCount).reduce((groups, report) => {
     const date = new Date(report.createdAt);
     const today = new Date();

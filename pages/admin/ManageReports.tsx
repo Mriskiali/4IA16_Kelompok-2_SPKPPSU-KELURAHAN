@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { ReportStatus, Report, Role } from '../../types';
 import { Check, X, MapPin, Download, AlertTriangle, Eye, Calendar, User, Clock, FileText, ArrowUpDown, ChevronDown, Filter, Search, SlidersHorizontal } from 'lucide-react';
 import { CATEGORY_COLORS, STATUS_COLORS } from '../../constants';
+import jsPDF from 'jspdf';
 
 type SortOption = 'NEWEST' | 'OLDEST' | 'STATUS';
 
@@ -11,45 +12,43 @@ export const ManageReports: React.FC = () => {
   const [filter, setFilter] = useState<ReportStatus | 'ALL'>('ALL');
   const [sortBy, setSortBy] = useState<SortOption>('NEWEST');
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [petugasFilter, setPetugasFilter] = useState<string>('ALL');
   
-  // Date Filters
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   
-  // Modal States
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   
-  // Detail View State
   const [viewReport, setViewReport] = useState<Report | null>(null);
 
   const sortRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
         setIsSortOpen(false);
       }
+      if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
+        setIsExportOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [sortRef]);
+  }, [sortRef, exportRef]);
 
-  // Filter & Sort Logic
   const filteredReports = reports
     .filter(r => {
-        // Status Filter
         if (filter !== 'ALL' && r.status !== filter) return false;
 
-        // Petugas Filter
         if (petugasFilter !== 'ALL' && r.userId !== petugasFilter) return false;
         
-        // Date Filter
         const reportDate = new Date(r.createdAt);
         reportDate.setHours(0,0,0,0);
         
@@ -106,30 +105,152 @@ export const ManageReports: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
-    const headers = ["ID", "Petugas", "Kategori", "Lokasi", "Deskripsi", "Status", "Waktu", "Catatan"];
-    const rows = filteredReports.map(r => [
-      r.id,
-      r.userName,
-      r.category,
-      r.location,
-      `"${r.description}"`,
-      r.status,
-      new Date(r.createdAt).toLocaleString(),
-      `"${r.feedback || ''}"`
-    ]);
+  const handleExport = (format: 'csv' | 'pdf' = 'csv') => {
+    if (format === 'csv') {
+      const headers = ["ID", "Petugas", "Kategori", "Lokasi", "Deskripsi", "Status", "Waktu", "Catatan"];
+      const rows = filteredReports.map(r => [
+        r.id,
+        r.userName,
+        r.category,
+        r.location,
+        `"${r.description}"`,
+        r.status,
+        new Date(r.createdAt).toLocaleString(),
+        `"${r.feedback || ''}"`
+      ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + headers.join(",") + "\n" 
-      + rows.map(e => e.join(",")).join("\n");
+      const csvContent = "data:text/csv;charset=utf-8," 
+        + headers.join(",") + "\n" 
+        + rows.map(e => e.join(",")).join("\n");
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `laporan_ppsu_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `laporan_ppsu_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (format === 'pdf') {
+      const doc = new jsPDF();
+      
+      doc.setFontSize(18);
+      doc.text('Laporan PPSU Kelurahan', 105, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      const dateText = startDate && endDate ? 
+        `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} - ${new Date(endDate).toLocaleDateString('id-ID')}` :
+        `Tanggal Ekspor: ${new Date().toLocaleDateString('id-ID')}`;
+      doc.text(dateText, 105, 30, { align: 'center' });
+      
+      doc.setFontSize(10);
+      const headers = ["No", "Petugas", "Kategori", "Lokasi", "Deskripsi", "Status", "Tanggal"];
+      const tableTop = 40;
+      
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 10;
+      const colWidths = [
+        10,                    
+        35,                    
+        25,                    
+        40,                    
+        50,                    
+        20,                    
+        25                     
+      ];
+      
+      let x = margin;
+      headers.forEach((header, index) => {
+        doc.setFillColor(230, 230, 230);
+        doc.rect(x, tableTop, colWidths[index], 10, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.text(header, x + 2, tableTop + 6);
+        x += colWidths[index];
+      });
+      
+      let y = tableTop + 10;
+      filteredReports.forEach((report, index) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+          
+          let headerX = margin;
+          headers.forEach((header, headerIndex) => {
+            doc.setFillColor(230, 230, 230);
+            doc.rect(headerX, y - 10, colWidths[headerIndex], 10, 'F');
+            doc.setTextColor(0, 0, 0);
+            doc.text(header, headerX + 2, y - 4);
+            headerX += colWidths[headerIndex];
+          });
+          y = 20;
+        }
+        
+        if (index % 2 === 0) {
+          doc.setFillColor(245, 245, 245);
+          doc.rect(margin, y, pageWidth - 2 * margin, 10, 'F');
+        }
+        
+        doc.setTextColor(0, 0, 0);
+        x = margin;
+        
+        doc.text((index + 1).toString(), x + 2, y + 6);
+        x += colWidths[0];
+
+        doc.text(report.userName, x + 2, y + 6);
+        x += colWidths[1];
+
+        doc.text(report.category, x + 2, y + 6);
+        x += colWidths[2];
+
+        const truncatedLocation = doc.splitTextToSize(report.location, colWidths[3] - 4);
+        doc.text(truncatedLocation, x + 2, y + 6);
+        x += colWidths[3];
+
+        const truncatedDesc = doc.splitTextToSize(report.description, colWidths[4] - 4);
+        doc.text(truncatedDesc, x + 2, y + 6);
+        x += colWidths[4];
+        
+
+        if (report.status === ReportStatus.ACCEPTED) {
+          doc.setTextColor(0, 128, 0);
+        } else if (report.status === ReportStatus.PENDING) {
+          doc.setTextColor(255, 165, 0);
+        } else if (report.status === ReportStatus.REJECTED) {
+          doc.setTextColor(255, 0, 0);
+        }
+        doc.text(report.status, x + 2, y + 6);
+        doc.setTextColor(0, 0, 0);
+        x += colWidths[5];
+        
+        doc.text(new Date(report.createdAt).toLocaleDateString('id-ID'), x + 2, y + 6);
+        
+        y += 10;
+      });
+      
+      y += 20;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Ringkasan Data', margin, y);
+      
+      y += 8;
+      doc.setFontSize(12);
+      doc.text(`Total Laporan: ${filteredReports.length}`, margin, y);
+      
+      y += 6;
+      doc.text(`Laporan Disetujui: ${filteredReports.filter(r => r.status === ReportStatus.ACCEPTED).length}`, margin, y);
+      
+      y += 6;
+      doc.text(`Laporan Ditolak: ${filteredReports.filter(r => r.status === ReportStatus.REJECTED).length}`, margin, y);
+      
+      y += 6;
+      doc.text(`Laporan Menunggu: ${filteredReports.filter(r => r.status === ReportStatus.PENDING).length}`, margin, y);
+      
+      doc.save(`laporan_ppsu_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
   };
 
   const handleSortSelect = (option: SortOption) => {
@@ -147,27 +268,41 @@ export const ManageReports: React.FC = () => {
                 <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Kelola Laporan</h2>
                 <p className="text-gray-500 mt-1">Pantau dan verifikasi laporan kinerja petugas.</p>
             </div>
-            <button 
-                onClick={handleExport}
-                className="bg-green-600 text-white px-4 py-2.5 rounded-xl shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 text-sm font-bold transition-all active:scale-95"
-            >
-                <Download size={16} /> <span className="hidden md:inline">Export Data</span>
-            </button>
+            
+            <div className="relative" ref={exportRef}>
+              <button 
+                  onClick={() => setIsExportOpen(!isExportOpen)}
+                  className="bg-green-600 text-white px-4 py-2.5 rounded-xl shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 text-sm font-bold transition-all active:scale-95"
+              >
+                  <Download size={16} /> <span className="hidden md:inline">Export Data</span>
+              </button>
+              
+              {isExportOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  <button 
+                    onClick={() => { handleExport('csv'); setIsExportOpen(false); }}
+                    className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 border-b border-gray-100 flex items-center gap-2"
+                  >
+                    <Download size={16} /> Ekspor ke CSV
+                  </button>
+                  <button 
+                    onClick={() => { handleExport('pdf'); setIsExportOpen(false); }}
+                    className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 flex items-center gap-2"
+                  >
+                    <Download size={16} /> Ekspor ke PDF
+                  </button>
+                </div>
+              )}
+            </div>
         </div>
         
-        {/* Advanced Filters Bar */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex flex-col xl:flex-row gap-5">
-            {/* Top Row: Tabs */}
             <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar flex-shrink-0">
               {['ALL', 'PENDING', 'ACCEPTED', 'REJECTED'].map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f as any)}
-                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${
-                      filter === f 
-                      ? 'bg-white text-orange-600 shadow-md transform scale-100' 
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
-                  }`}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${filter === f ? 'bg-white text-orange-600 shadow-md transform scale-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'}`}
                 >
                   {f === 'ALL' ? 'Semua' : f}
                 </button>
@@ -176,9 +311,7 @@ export const ManageReports: React.FC = () => {
 
             <div className="w-px h-auto bg-gray-200 hidden xl:block mx-2"></div>
 
-            {/* Middle Row: Inputs */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
-                {/* Petugas Select */}
                 <div className="relative group">
                     <User className="absolute left-3 top-3 text-gray-400 group-hover:text-orange-500 transition-colors" size={16} />
                     <select
@@ -194,7 +327,6 @@ export const ManageReports: React.FC = () => {
                     <ChevronDown className="absolute right-3 top-3 text-gray-400 pointer-events-none" size={16} />
                 </div>
 
-                {/* Date Start */}
                 <div className="relative group">
                     <div className="absolute left-3 top-2.5 text-gray-400 font-bold text-[10px] uppercase pointer-events-none">Dari</div>
                     <input 
@@ -205,7 +337,6 @@ export const ManageReports: React.FC = () => {
                     />
                 </div>
 
-                {/* Date End */}
                 <div className="relative group">
                     <div className="absolute left-3 top-2.5 text-gray-400 font-bold text-[10px] uppercase pointer-events-none">Sampai</div>
                     <input 
@@ -217,7 +348,6 @@ export const ManageReports: React.FC = () => {
                 </div>
             </div>
 
-            {/* Sort Button */}
             <div className="relative" ref={sortRef}>
                 <button 
                   onClick={() => setIsSortOpen(!isSortOpen)}
@@ -246,13 +376,11 @@ export const ManageReports: React.FC = () => {
             onClick={() => setViewReport(report)}
             className="group bg-white rounded-2xl p-3 border border-gray-200 shadow-sm hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer flex flex-col md:flex-row gap-4 md:items-center"
           >
-            {/* Image Thumbnail */}
             <div className="relative w-full md:w-32 h-32 md:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
               <img src={report.imageUrl} alt="Bukti" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
             </div>
             
-            {/* Content */}
             <div className="flex-1 flex flex-col gap-1">
                <div className="flex justify-between items-start">
                    <div className="flex items-center gap-2 mb-1">
@@ -283,13 +411,8 @@ export const ManageReports: React.FC = () => {
                </div>
             </div>
 
-            {/* Status & Actions */}
             <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 border-t md:border-t-0 border-gray-100 pt-3 md:pt-0 pl-0 md:pl-4 md:border-l md:border-gray-100 min-w-[140px]">
-                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                    report.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                    report.status === 'ACCEPTED' ? 'bg-green-50 text-green-700 border-green-200' :
-                    'bg-red-50 text-red-700 border-red-200'
-                }`}>
+                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${report.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : report.status === 'ACCEPTED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                     {report.status}
                 </div>
                 
@@ -329,7 +452,6 @@ export const ManageReports: React.FC = () => {
         )}
       </div>
 
-      {/* Rejection Modal */}
       {isRejectModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden scale-100 animate-in zoom-in-95 duration-200">
@@ -344,7 +466,7 @@ export const ManageReports: React.FC = () => {
             </div>
             <div className="p-6">
                 <form onSubmit={handleConfirmReject}>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Alasan Penolakan <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Alasan Penolakan <span className="text-red-500"> *</span></label>
                 <textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
@@ -374,7 +496,6 @@ export const ManageReports: React.FC = () => {
         </div>
       )}
 
-      {/* Accept Modal */}
       {isAcceptModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-8 scale-100 animate-in zoom-in-95 duration-200 text-center">
@@ -405,11 +526,9 @@ export const ManageReports: React.FC = () => {
         </div>
       )}
 
-      {/* Detail View Modal */}
       {viewReport && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
            <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              {/* Header */}
               <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-white z-10">
                  <div>
                     <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
@@ -425,9 +544,7 @@ export const ManageReports: React.FC = () => {
                  </button>
               </div>
 
-              {/* Scrollable Body */}
               <div className="flex-1 overflow-y-auto p-0 md:flex bg-gray-50">
-                 {/* Image Section */}
                  <div className="w-full md:w-3/5 bg-black flex items-center justify-center relative min-h-[400px]">
                     <img 
                       src={viewReport.imageUrl} 
@@ -436,23 +553,13 @@ export const ManageReports: React.FC = () => {
                     />
                  </div>
 
-                 {/* Details Section */}
                  <div className="w-full md:w-2/5 p-6 md:p-8 space-y-8 bg-white overflow-y-auto">
-                    {/* Status Badge */}
                     <div className="flex justify-between items-center">
                         <span className={`text-xs px-3 py-1.5 rounded-lg font-bold tracking-wide uppercase ${CATEGORY_COLORS[viewReport.category]}`}>
                            {viewReport.category}
                         </span>
-                        <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-bold border ${
-                             viewReport.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                             viewReport.status === 'ACCEPTED' ? 'bg-green-50 text-green-700 border-green-200' :
-                             'bg-red-50 text-red-700 border-red-200'
-                        }`}>
-                            <div className={`w-2 h-2 rounded-full ${
-                                 viewReport.status === 'PENDING' ? 'bg-yellow-500' :
-                                 viewReport.status === 'ACCEPTED' ? 'bg-green-500' :
-                                 'bg-red-500'
-                            }`}></div>
+                        <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-bold border ${viewReport.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : viewReport.status === 'ACCEPTED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                            <div className={`w-2 h-2 rounded-full ${viewReport.status === 'PENDING' ? 'bg-yellow-500' : viewReport.status === 'ACCEPTED' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                            {viewReport.status}
                         </span>
                     </div>
@@ -506,7 +613,6 @@ export const ManageReports: React.FC = () => {
                  </div>
               </div>
 
-              {/* Footer Actions (Only if Pending) */}
               {viewReport.status === ReportStatus.PENDING && (
                  <div className="p-5 border-t border-gray-100 bg-white flex gap-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.05)] z-20">
                     <button 

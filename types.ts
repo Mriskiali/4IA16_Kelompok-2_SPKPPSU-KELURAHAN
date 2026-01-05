@@ -25,19 +25,20 @@ export interface User {
   isActive: boolean;
   phone?: string;
   avatarUrl?: string;
-  password?: string; // Added for auth simulation
+  password?: string;
 }
 
 export interface Report {
   id: string;
   userId: string;
-  userName: string; // Denormalized for prototype ease
+  userName: string;
   category: ReportCategory;
   description: string;
   imageUrl: string;
   location: string;
+  coordinates?: [number, number];
   status: ReportStatus;
-  createdAt: string; // ISO String
+  createdAt: string;
   feedback?: string;
 }
 
@@ -50,7 +51,7 @@ export type NotificationType = 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
 
 export interface Notification {
   id: string;
-  userId: string; // The user who should receive this notification
+  userId: string;
   message: string;
   type: NotificationType;
   read: boolean;

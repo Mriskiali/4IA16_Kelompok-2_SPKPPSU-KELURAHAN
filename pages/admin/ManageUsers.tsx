@@ -12,7 +12,6 @@ export const ManageUsers: React.FC = () => {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
 
-  // Form State
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
     pjlpNumber: '',
@@ -54,7 +53,6 @@ export const ManageUsers: React.FC = () => {
       editUser(editingUser.id, formData);
       addNotification(auth.user.id, `Data ${formData.name} berhasil diperbarui`, 'SUCCESS');
     } else {
-      // Basic validation
       if (!formData.name || !formData.pjlpNumber) {
         addNotification(auth.user.id, "Nama dan Nomor PJLP wajib diisi", 'ERROR');
         return;
@@ -83,7 +81,6 @@ export const ManageUsers: React.FC = () => {
     setDeleteConfirmationText('');
   };
 
-  // Execute Delete
   const handleConfirmDelete = async (e: React.FormEvent) => {
     e.preventDefault();
     if (userToDelete && auth.user && deleteConfirmationText === 'HAPUS') {
@@ -215,7 +212,7 @@ export const ManageUsers: React.FC = () => {
                     value={formData.pjlpNumber}
                     onChange={e => setFormData({...formData, pjlpNumber: e.target.value})}
                     className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none ${editingUser ? 'bg-gray-100 text-gray-500' : 'bg-white text-gray-900'}`}
-                    disabled={!!editingUser} // ID shouldn't change easily
+                    disabled={!!editingUser}
                   />
                 </div>
               </div>

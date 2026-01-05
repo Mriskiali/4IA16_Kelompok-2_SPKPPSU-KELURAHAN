@@ -7,7 +7,6 @@ export const PetugasProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Form State
   const [name, setName] = useState(auth.user?.name || '');
   const [phone, setPhone] = useState(auth.user?.phone || '');
   const [password, setPassword] = useState('');
@@ -42,7 +41,6 @@ export const PetugasProfile: React.FC = () => {
     }
   };
 
-  // Helper: Convert File to Base64 String
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -55,7 +53,6 @@ export const PetugasProfile: React.FC = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && auth.user) {
-      // Validasi Ukuran File (Maksimal 2MB agar database tidak berat)
       if (file.size > 2 * 1024 * 1024) {
         addNotification(auth.user.id, "Ukuran foto terlalu besar (Maks 2MB)", 'ERROR');
         return;
@@ -63,7 +60,6 @@ export const PetugasProfile: React.FC = () => {
 
       try {
         const base64String = await convertFileToBase64(file);
-        // Simpan string base64 langsung ke database
         editUser(auth.user.id, { avatarUrl: base64String });
         addNotification(auth.user.id, "Foto profil berhasil diperbarui!", 'SUCCESS');
       } catch (error) {

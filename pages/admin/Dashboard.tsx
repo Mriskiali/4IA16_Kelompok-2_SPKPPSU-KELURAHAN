@@ -13,12 +13,11 @@ export const AdminDashboard: React.FC = () => {
   const totalPetugas = users.filter(u => u.role === Role.PETUGAS).length;
 
   const data = [
-    { name: 'Pending', value: pendingReports, color: '#d97706' }, // Darker yellow/orange
-    { name: 'Diterima', value: reports.filter(r => r.status === ReportStatus.ACCEPTED).length, color: '#16a34a' }, // Darker green
-    { name: 'Ditolak', value: reports.filter(r => r.status === ReportStatus.REJECTED).length, color: '#dc2626' }, // Darker red
+    { name: 'Pending', value: pendingReports, color: '#d97706' },
+    { name: 'Diterima', value: reports.filter(r => r.status === ReportStatus.ACCEPTED).length, color: '#16a34a' },
+    { name: 'Ditolak', value: reports.filter(r => r.status === ReportStatus.REJECTED).length, color: '#dc2626' },
   ];
 
-  // Logic to get the latest report for each Petugas
   const officersWithLastReport = users
     .filter(u => u.role === Role.PETUGAS)
     .map(user => {
@@ -32,13 +31,11 @@ export const AdminDashboard: React.FC = () => {
         };
     })
     .sort((a, b) => {
-        // Sort by latest report date (recent first), those with no reports go last
         if (!a.lastReport) return 1;
         if (!b.lastReport) return -1;
         return new Date(b.lastReport.createdAt).getTime() - new Date(a.lastReport.createdAt).getTime();
     });
 
-  // Calculate stats per officer
   const officerStats = users
     .filter(u => u.role === Role.PETUGAS)
     .map(user => ({
@@ -46,7 +43,7 @@ export const AdminDashboard: React.FC = () => {
       total: reports.filter(r => r.userId === user.id).length,
       avatar: user.avatarUrl
     }))
-    .sort((a, b) => b.total - a.total); // Sort by total reports descending
+    .sort((a, b) => b.total - a.total);
 
   return (
     <div className="space-y-6">

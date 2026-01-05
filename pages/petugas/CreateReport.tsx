@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ReportCategory } from '../../types';
-import { Camera, MapPin, Send, AlertCircle, X, Check, Crosshair, Link as LinkIcon, Image as ImageIcon, Trash2 } from 'lucide-react';
+import MapPicker from '../../components/MapPicker';
+import { Camera, MapPin, Send, AlertCircle, X, Check, Crosshair, Link as LinkIcon, Image as ImageIcon, Trash2, Map as MapIcon } from 'lucide-react';
 
 export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navigate }) => {
   const { addReport, activeDraft, setActiveDraft, addNotification, auth } = useApp();
   const [loading, setLoading] = useState(false);
   
-  // UI States
   const [showCamera, setShowCamera] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -32,7 +32,7 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
 
   useEffect(() => {
     if (activeDraft) {
-      setDraftId(activeDraft.id); // Capture the ID of the report being fixed
+      setDraftId(activeDraft.id);
       setForm({
         category: activeDraft.category || ReportCategory.KEBERSIHAN,
         description: activeDraft.description || '',
@@ -55,7 +55,6 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
      if(auth.user) addNotification(auth.user.id, "Perbaikan laporan dibatalkan", "INFO");
   };
 
-  // Real-time validation
   const validateField = (field: string, value: string) => {
       let error = '';
       if (field === 'description') {
@@ -79,7 +78,6 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
       validateField('location', val);
   };
 
-  // Camera Logic
   const startCamera = async () => {
       setShowCamera(true);
       try {
@@ -137,7 +135,6 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Final Validation
     const newErrors: any = {};
     if (!form.description || form.description.length < 10) newErrors.description = 'Deskripsi wajib diisi (min 10 karakter)';
     if (!form.location) newErrors.location = 'Lokasi wajib diisi';
@@ -150,7 +147,6 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
 
     setLoading(true);
     setTimeout(() => {
-      // Pass draftId as the second argument to replace the old report
       addReport({
         category: form.category,
         description: form.description,
@@ -158,7 +154,7 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
         imageUrl: form.image!,
       }, draftId);
       
-      setActiveDraft(null); // Clear draft state after submit
+      setActiveDraft(null);
       setLoading(false);
       navigate('petugas-home');
     }, 1000);
@@ -166,103 +162,7 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
 
   const isFormValid = !errors.description && !errors.location && !errors.image && form.description.length >= 10 && form.location.length > 0 && form.image;
 
-  // --- INTERACTIVE MAP LOGIC ---
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markerRef = useRef<any>(null);
 
-  const [tempLocation, setTempLocation] = useState('Menunggu lokasi...');
-  const [isLocating, setIsLocating] = useState(false);
-
-  // Initialize Map
-  useEffect(() => {
-    if (showMap && !mapInstanceRef.current && mapContainerRef.current) {
-      if ((window as any).L) {
-         const L = (window as any).L;
-         const map = L.map(mapContainerRef.current).setView([-6.195, 106.890], 15); // Rawamangun Coords
-         
-         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-             attribution: '&copy; OpenStreetMap contributors'
-         }).addTo(map);
-
-         const marker = L.marker([-6.195, 106.890], { draggable: true }).addTo(map);
-         
-         marker.on('dragend', async function(e: any) {
-             const { lat, lng } = e.target.getLatLng();
-             setIsLocating(true);
-             setTempLocation("Mencari alamat...");
-             try {
-                // Reverse Geocoding using Nominatim (Free)
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                const data = await response.json();
-                const address = data.display_name.split(',')[0] + ', ' + (data.address.suburb || data.address.city || ''); 
-                setTempLocation(address);
-             } catch (err) {
-                setTempLocation(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
-             } finally {
-                setIsLocating(false);
-             }
-         });
-         
-         mapInstanceRef.current = map;
-         markerRef.current = marker;
-         
-         // Trigger initial address find
-         setTempLocation("Geser pin untuk cari alamat");
-      }
-    }
-  }, [showMap]);
-
-  const handleLocateMe = () => {
-     if (!mapInstanceRef.current || !markerRef.current) return;
-     
-     setIsLocating(true);
-     setTempLocation("Mendeteksi lokasi GPS...");
-
-     if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                const latLng = [latitude, longitude];
-                
-                // Move Map & Marker
-                mapInstanceRef.current.setView(latLng, 18);
-                markerRef.current.setLatLng(latLng);
-                
-                // Trigger dragend logic manually to get address
-                markerRef.current.fire('dragend', { target: { getLatLng: () => ({ lat: latitude, lng: longitude }) } });
-            },
-            (error) => {
-                alert("Gagal mendeteksi lokasi: " + error.message);
-                setIsLocating(false);
-                setTempLocation("Gagal mendeteksi lokasi");
-            },
-            { enableHighAccuracy: true }
-         );
-     } else {
-        alert("GPS tidak didukung di browser ini.");
-        setIsLocating(false);
-     }
-  };
-
-  const confirmMapLocation = () => {
-    setForm(prev => ({ ...prev, location: tempLocation }));
-    setErrors(prev => ({ ...prev, location: undefined }));
-    setShowMap(false);
-    // Cleanup map
-    if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-    }
-  };
-
-  const closeMap = () => {
-      setShowMap(false);
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-    }
-  };
 
   return (
     <div className="bg-white min-h-[80vh] rounded-xl shadow-sm border border-gray-100 p-4">
@@ -492,55 +392,18 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
           </div>
       )}
 
-      {/* Leaflet Map Modal (Real Map) */}
-      {showMap && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center">
-              <div className="bg-white w-full md:w-[600px] h-[90vh] md:h-[600px] md:rounded-2xl rounded-t-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom shadow-2xl">
-                   {/* Map Header */}
-                   <div className="p-4 bg-white z-20 flex justify-between items-center shadow-sm border-b">
-                       <h3 className="font-bold text-gray-800 text-lg">Pilih Lokasi (Maps)</h3>
-                       <button onClick={closeMap} className="p-2 hover:bg-gray-100 rounded-full"><X size={20} /></button>
-                   </div>
-                   
-                   {/* Map Container */}
-                   <div className="flex-1 relative bg-gray-100">
-                       <div ref={mapContainerRef} className="w-full h-full z-0"></div>
-                   </div>
-
-                   {/* Footer Panel */}
-                   <div className="p-5 bg-white border-t rounded-t-2xl -mt-4 z-[500] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] relative">
-                       {/* Floating Locate Me Button */}
-                       <button 
-                          onClick={handleLocateMe}
-                          className="absolute -top-16 right-5 bg-white p-3 rounded-full shadow-lg text-blue-600 border border-blue-100 active:scale-95 transition-transform"
-                          title="Lokasi Saya Saat Ini"
-                       >
-                          <Crosshair size={24} />
-                       </button>
-
-                       <div className="flex items-start gap-3 mb-4">
-                          <div className="p-2 bg-orange-100 text-orange-600 rounded-full mt-1">
-                             <MapPin size={20} />
-                          </div>
-                          <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium uppercase mb-0.5">Lokasi Terpilih</p>
-                              <p className="font-bold text-gray-900 text-sm md:text-base leading-tight">
-                                {tempLocation}
-                              </p>
-                          </div>
-                       </div>
-                       
-                       <button 
-                         onClick={confirmMapLocation}
-                         disabled={isLocating}
-                         className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-orange-200 transition-colors flex items-center justify-center gap-2 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
-                       >
-                           <Check size={18} /> KONFIRMASI LOKASI
-                       </button>
-                   </div>
-              </div>
-          </div>
-      )}
+      {/* MapPicker Component */}
+      <MapPicker
+        isVisible={showMap}
+        initialPosition={[-6.195, 106.865]}
+        onLocationSelected={(location) => {
+          setForm(prev => ({ ...prev, location: location.address || `${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}` }));
+          setErrors(prev => ({ ...prev, location: undefined }));
+          setShowMap(false);
+        }}
+        onClose={() => setShowMap(false)}
+        showLocateButton={true}
+      />
     </div>
   );
 };
