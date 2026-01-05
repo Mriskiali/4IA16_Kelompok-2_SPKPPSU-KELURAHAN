@@ -121,6 +121,8 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
       const url = URL.createObjectURL(file);
       setForm(prev => ({ ...prev, image: url }));
       setErrors(prev => ({ ...prev, image: undefined }));
+      
+      setTimeout(() => URL.revokeObjectURL(url), 3600000);
     }
   };
 

@@ -30,9 +30,14 @@ export const resizeImage = (file: File, maxWidth: number = 800, maxHeight: numbe
       ctx.drawImage(img, 0, 0, width, height);
       
       resolve(canvas.toDataURL('image/jpeg', 0.8));
+      
+      URL.revokeObjectURL(img.src);
     };
     
-    img.onerror = reject;
+    img.onerror = (error) => {
+      URL.revokeObjectURL(img.src);
+      reject(error);
+    };
     img.src = URL.createObjectURL(file);
   });
 };
