@@ -95,17 +95,53 @@ export const formatDateTime = (dateString: string): string => {
 };
 
 export const sanitizeText = (text: string): string => {
-  return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+  return text.replace(/<script\\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
             .replace(/javascript:/gi, '')
             .trim();
 };
 
 export const validateEmail = (email: string): boolean => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const re = /^[^\s@]+\@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
 };
 
 export const validatePhone = (phone: string): boolean => {
-  const re = /^(\+62|0)[2-9]\d{6,10}$/;
+  const re = /^(\\+62|0)[2-9]\d{6,10}$/;
   return re.test(phone.replace(/\s/g, ''));
+};
+
+export const compressImage = (dataUrl: string, maxWidth: number = 800, maxHeight: number = 600, quality: number = 0.8): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      reject(new Error('Could not get canvas context'));
+      return;
+    }
+    
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      
+      if (width > maxWidth) {
+        height *= maxWidth / width;
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width *= maxHeight / height;
+        height = maxHeight;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
 };

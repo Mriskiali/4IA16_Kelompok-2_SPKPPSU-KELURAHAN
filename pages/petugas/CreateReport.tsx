@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ReportCategory } from '../../types';
 import MapPicker from '../../components/MapPicker';
+import { compressImage } from '../../utils/helpers';
 import { Camera, MapPin, Send, AlertCircle, X, Check, Crosshair, Link as LinkIcon, Image as ImageIcon, Trash2, Map as MapIcon } from 'lucide-react';
 
 export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navigate }) => {
@@ -100,7 +101,7 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
       }
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
       if (videoRef.current) {
           const canvas = document.createElement('canvas');
           canvas.width = videoRef.current.videoWidth;
@@ -109,8 +110,17 @@ export const CreateReport: React.FC<{ navigate: (p: string) => void }> = ({ navi
           if (ctx) {
               ctx.drawImage(videoRef.current, 0, 0);
               const url = canvas.toDataURL('image/jpeg');
-              setForm(prev => ({ ...prev, image: url }));
-              setErrors(prev => ({ ...prev, image: undefined }));
+              
+              try {
+                  const compressedUrl = await compressImage(url);
+                  setForm(prev => ({ ...prev, image: compressedUrl }));
+                  setErrors(prev => ({ ...prev, image: undefined }));
+              } catch (error) {
+                  console.error('Error compressing captured image:', error);
+                  setForm(prev => ({ ...prev, image: url }));
+                  setErrors(prev => ({ ...prev, image: undefined }));
+              }
+              
               stopCamera();
           }
       }

@@ -153,6 +153,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         console.error('Error converting blob URL to data URL:', error);
         addNotification(auth.user.id, "Gagal mengonversi gambar, mungkin tidak akan muncul di laporan", 'ERROR');
       }
+    } else {
+      processedData = { ...data };
     }
     
     const optimisticId = `temp-${Date.now()}`;
