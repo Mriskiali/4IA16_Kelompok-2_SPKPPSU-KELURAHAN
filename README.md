@@ -5,6 +5,10 @@
 
 Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan proses pelaporan kinerja petugas PPSU di Kelurahan. Aplikasi ini mendukung pelaporan lapangan berbasis lokasi (GPS) dan pemantauan real-time oleh admin.
 
+## Role
+
+**Mu'afa Riski Ali** | **Full-Stack Developer** | **50422921**
+
 ---
 
 ## Fitur Unggulan
@@ -39,6 +43,8 @@ Aplikasi web berbasis **React & Supabase** yang dirancang untuk mendigitalkan pr
 *   **Peta**: Leaflet.js & OpenStreetMap (Gratis, tanpa API Key Google).
 *   **Icons**: Lucide React.
 *   **Charts**: Recharts.
+*   **Project Management**: Trello
+*   **IDE**: Visual Studio Code
 
 
 ---
@@ -110,7 +116,7 @@ create table public."Profile" (
   "isActive" boolean not null default true,
   phone text,
   "avatarUrl" text,
-  password text, 
+  password text,
   "createdAt" timestamp with time zone default timezone('utc'::text, now()) not null,
   "updatedAt" timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -157,6 +163,27 @@ Akses di browser: `http://localhost:5173`
 
 ---
 
+## Manajemen Proyek
+
+### Tools yang Digunakan
+*   **Visual Studio Code**: IDE utama untuk pengembangan aplikasi
+*   **Trello**: Platform manajemen proyek untuk pelacakan tugas dan kolaborasi tim
+*   **Git & GitHub**: Version control dan kolaborasi kode
+*   **Supabase**: Platform backend untuk database dan autentikasi
+
+### Pembagian Peran
+*   **Developer**: Bertanggung jawab atas implementasi fitur dan pengembangan aplikasi
+*   **UI/UX Designer**: Bertanggung jawab atas desain antarmuka dan pengalaman pengguna
+*   **Tester**: Bertanggung jawab atas pengujian fungsionalitas dan kualitas aplikasi
+*   **Admin**: Bertanggung jawab atas manajemen pengguna dan verifikasi laporan
+
+### Proses Kolaborasi
+*   Setiap perubahan kode harus melalui pull request dan review sebelum merge
+*   Tugas dan milestone dipantau melalui Trello board
+*   Setiap role memiliki akses dan hak akses sesuai dengan tanggung jawabnya
+*   Dokumentasi dijaga agar selalu up-to-date dengan perkembangan aplikasi
+
+---
 
 ## Dokumentasi Lengkap
 

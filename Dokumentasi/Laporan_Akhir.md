@@ -194,7 +194,26 @@ Proyek pengembangan Sistem Pelaporan Kerja PPSU (SPKPPSU) Kelurahan telah selesa
 - **Periksa koneksi internet**: Pastikan perangkat terhubung ke internet
 - **Hubungi admin**: Jika akun tidak aktif atau lupa password
 
-#### 2.6.2 Lokasi Tidak Akurat
+### 2.7 Tools dan Manajemen Proyek
+
+#### 2.7.1 Tools Pengembangan
+- **IDE**: Visual Studio Code digunakan sebagai integrated development environment utama
+- **Version Control**: Git dan GitHub untuk manajemen kode dan kolaborasi
+- **Database**: Supabase sebagai backend-as-a-service dengan PostgreSQL
+- **Mapping**: Leaflet.js untuk integrasi peta interaktif
+- **Styling**: Tailwind CSS untuk styling antarmuka
+- **Charts**: Recharts untuk visualisasi data statistik
+
+#### 2.7.2 Manajemen Proyek
+- **Platform**: Trello digunakan untuk manajemen tugas dan pelacakan progress
+- **Metodologi**: Pendekatan individual development dengan manajemen waktu pribadi
+- **Komunikasi**: GitHub Issues untuk pelaporan bug dan permintaan fitur (jika ada)
+- **Documentation**: Dokumentasi disimpan dalam folder Dokumentasi
+
+#### 2.7.3 Peran dalam Proyek
+- **Mu'afa Riski Ali (Full-Stack Developer)**: Bertanggung jawab atas seluruh aspek pengembangan aplikasi termasuk analisis kebutuhan, desain antarmuka, implementasi fitur, pengujian, dan dokumentasi
+
+#### 2.7.4 Troubleshooting Lokasi Tidak Akurat
 - **Nyalakan GPS**: Pastikan GPS perangkat aktif
 - **Perbarui lokasi**: Tunggu beberapa detik untuk akurasi lebih baik
 - **Gunakan peta manual**: Pilih lokasi secara manual jika otomatisasi gagal

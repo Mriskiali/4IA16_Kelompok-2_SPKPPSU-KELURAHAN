@@ -114,22 +114,41 @@ feat: implementasi CRUD pengguna admin
 - Validasi akses hanya untuk admin
 ```
 
-## 4. Rencana Selanjutnya
+## 4. Tools dan Manajemen Proyek
 
-### 4.1 Minggu Depan
+### 4.1 Tools Pengembangan
+- **IDE**: Visual Studio Code digunakan sebagai integrated development environment utama
+- **Version Control**: Git dan GitHub untuk manajemen kode dan kolaborasi
+- **Database**: Supabase sebagai backend-as-a-service dengan PostgreSQL
+- **Mapping**: Leaflet.js untuk integrasi peta interaktif
+- **Styling**: Tailwind CSS untuk styling antarmuka
+- **Charts**: Recharts untuk visualisasi data statistik
+
+### 4.2 Manajemen Proyek
+- **Platform**: Trello digunakan untuk manajemen tugas dan pelacakan progress
+- **Metodologi**: Pendekatan individual development dengan manajemen waktu pribadi
+- **Komunikasi**: GitHub Issues untuk pelaporan bug dan permintaan fitur (jika ada)
+- **Documentation**: Dokumentasi disimpan dalam folder Dokumentasi
+
+### 4.3 Peran dalam Proyek
+- **Mu'afa Riski Ali (Full-Stack Developer)**: Bertanggung jawab atas seluruh aspek pengembangan aplikasi termasuk analisis kebutuhan, desain antarmuka, implementasi fitur, pengujian, dan dokumentasi
+
+## 5. Rencana Selanjutnya
+
+### 5.1 Minggu Depan
 - Menyelesaikan modul statistik dan analitik
 - Melakukan perbaikan UI/UX berdasarkan feedback
 
-### 4.2 Dua Minggu Kedepan
+### 5.2 Dua Minggu Kedepan
 - Melakukan testing menyeluruh (unit test, integration test, user acceptance test)
 - Menyelesaikan dokumentasi teknis dan user guide
 - Persiapan deployment awal
 
-### 4.3 Akhir Pengembangan
+### 5.3 Akhir Pengembangan
 - Deployment ke production environment
 - Training penggunaan sistem (admin dan petugas)
 - Penyerahan sistem dan dokumentasi lengkap
 
-## 5. Kesimpulan
+## 6. Kesimpulan
 
 Proyek SPKPPSU Kelurahan berjalan sesuai rencana dengan tingkat kemajuan yang baik. Kendala teknis yang muncul telah diatasi dengan pendekatan sistematis dan kolaboratif. Dengan progres saat ini dan rencana lanjutan yang jelas, sistem diharapkan dapat selesai sesuai dengan jadwal yang telah ditentukan.

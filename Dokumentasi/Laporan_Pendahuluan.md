@@ -116,6 +116,23 @@ Sistem menggunakan pendekatan Client-Server dengan:
 - **Maps**: Leaflet.js & OpenStreetMap
 - **Icons**: Lucide React
 - **Charts**: Recharts
+- **Project Management**: Trello
+- **IDE**: Visual Studio Code
+
+### 4.3 Tools dan Manajemen Proyek
+#### 4.3.1 Tools Pengembangan
+- **Integrated Development Environment (IDE)**: Visual Studio Code digunakan sebagai IDE utama dalam pengembangan aplikasi
+- **Version Control**: Git dan GitHub untuk manajemen kode dan kolaborasi tim
+- **Package Manager**: npm untuk manajemen dependensi proyek
+- **Build Tool**: Vite sebagai build tool untuk pengembangan dan produksi
+
+#### 4.3.2 Manajemen Proyek
+- **Platform Manajemen**: Trello digunakan untuk pelacakan tugas dan progress proyek
+- **Komunikasi**: GitHub Issues untuk pelaporan bug dan permintaan fitur (jika ada)
+- **Dokumentasi**: Dokumentasi teknis dan panduan disimpan dalam repositori
+
+#### 4.3.3 Peran dalam Proyek
+- **Mu'afa Riski Ali (Full-Stack Developer)**: Bertanggung jawab atas seluruh aspek pengembangan aplikasi termasuk analisis kebutuhan, desain antarmuka, implementasi fitur, pengujian, dan dokumentasi
 
 ## 5. Penutup
 

@@ -64,8 +64,25 @@ Kami memilih metode Waterfall karena memberikan pendekatan yang sistematis dan t
 - **Charts**: Recharts
 - **PDF Generation**: jsPDF
 
+## 6. Tools dan Manajemen Proyek
 
-## 6. Timeline Pengerjaan
+### 6.1 Tools Pengembangan
+- **Integrated Development Environment (IDE)**: Visual Studio Code sebagai IDE utama
+- **Version Control**: Git dan GitHub untuk manajemen kode dan kolaborasi
+- **Package Manager**: npm untuk manajemen dependensi
+- **Build Tool**: Vite untuk proses development dan build
+- **Code Quality**: ESLint dan Prettier untuk maintain code quality
+
+### 6.2 Manajemen Proyek
+- **Platform Manajemen**: Trello untuk pelacakan tugas dan progress
+- **Komunikasi**: GitHub Issues untuk pelaporan bug dan permintaan fitur (jika ada)
+- **Documentation**: Markdown files untuk dokumentasi teknis dan panduan
+
+### 6.3 Peran dalam Proyek
+- **Mu'afa Riski Ali (Full-Stack Developer)**: Bertanggung jawab atas seluruh aspek pengembangan aplikasi termasuk analisis kebutuhan, desain antarmuka, implementasi fitur, pengujian, dan dokumentasi
+
+
+## 7. Timeline Pengerjaan
 
 | Fase | Kegiatan | Durasi | Bobot |
 |------|----------|--------|--------|
@@ -75,13 +92,13 @@ Kami memilih metode Waterfall karena memberikan pendekatan yang sistematis dan t
 | 4 | Integrasi dan Testing | Minggu 3-4 | 15% |
 | 5 | Dokumentasi dan Pelaporan | Minggu 4 | 10% |
 
-## 7. Keluaran Proyek
+## 8. Keluaran Proyek
 
 - Sistem pelaporan kerja PPSU berbasis web yang siap digunakan
 - Dokumentasi sistem lengkap (analisis, perancangan, implementasi, testing)
 - Panduan penggunaan untuk admin dan petugas
 - Manual administrasi sistem
 
-## 8. Penutup
+## 9. Penutup
 
 Dengan adanya sistem SPKPPSU ini, Kelurahan diharapkan dapat meningkatkan efisiensi dan efektivitas dalam mengelola pelaporan kerja PPSU, sehingga kualitas pelayanan publik dapat terus ditingkatkan secara berkelanjutan.
