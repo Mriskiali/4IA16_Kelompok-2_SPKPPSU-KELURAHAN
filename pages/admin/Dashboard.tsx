@@ -182,7 +182,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="divide-y divide-gray-100 flex-1 overflow-y-auto max-h-[300px] no-scrollbar">
               {reports.slice(0, 5).map(report => (
                 <div key={report.id} className="p-4 flex gap-4 items-center hover:bg-gray-50">
-                  <img src={report.imageUrl} alt="" className="w-12 h-12 rounded-lg object-cover border border-gray-100" />
+                  <img src={report.imageUrl && report.imageUrl.startsWith('data:') ? report.imageUrl : report.imageUrl ? `${report.imageUrl}?status=${report.status}&t=${new Date(report.createdAt).getTime()}&f=${report.feedback || 'none'}` : ''} alt="" className="w-12 h-12 rounded-lg object-cover border border-gray-100" />
                   <div className="flex-1">
                     <p className="text-sm font-bold text-gray-900">
                       {report.userName} <span className="text-gray-500 font-medium">mengirim laporan</span> {report.category}

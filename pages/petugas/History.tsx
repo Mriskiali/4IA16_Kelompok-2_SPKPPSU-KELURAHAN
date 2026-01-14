@@ -119,7 +119,7 @@ export const PetugasHistory: React.FC<{ navigate?: (p: string) => void }> = ({ n
                         <div className="pl-5 p-4 flex gap-4">
                            {/* Image */}
                            <div className="w-20 h-20 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden relative">
-                              <img src={report.imageUrl} alt="" className="w-full h-full object-cover" />
+                              <img src={report.imageUrl && report.imageUrl.startsWith('data:') ? report.imageUrl : report.imageUrl ? `${report.imageUrl}?status=${report.status}&t=${new Date(report.createdAt).getTime()}&f=${report.feedback || 'none'}` : ''} alt="" className="w-full h-full object-cover" />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
                            </div>
 

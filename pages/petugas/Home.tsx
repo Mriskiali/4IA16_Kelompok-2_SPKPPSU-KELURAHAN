@@ -84,7 +84,7 @@ export const PetugasHome: React.FC<{ navigate: (p: string) => void }> = ({ navig
           <div className="space-y-3">
             {todayReports.map(report => (
               <div key={report.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex gap-3">
-                <img src={report.imageUrl} className="w-16 h-16 rounded-lg object-cover bg-gray-200" alt="Work" />
+                <img src={report.imageUrl && report.imageUrl.startsWith('data:') ? report.imageUrl : report.imageUrl ? `${report.imageUrl}?status=${report.status}&t=${new Date(report.createdAt).getTime()}&f=${report.feedback || 'none'}` : ''} className="w-16 h-16 rounded-lg object-cover bg-gray-200" alt="Work" />
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start mb-1">
                      <h4 className="font-medium text-sm text-gray-900 truncate">{report.category}</h4>

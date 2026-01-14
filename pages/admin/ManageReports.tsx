@@ -377,7 +377,12 @@ export const ManageReports: React.FC = () => {
             className="group bg-white rounded-2xl p-3 border border-gray-200 shadow-sm hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer flex flex-col md:flex-row gap-4 md:items-center"
           >
             <div className="relative w-full md:w-32 h-32 md:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
-              <img src={report.imageUrl} alt="Bukti" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <img
+                src={report.imageUrl && report.imageUrl.startsWith('data:') ? report.imageUrl : report.imageUrl ?
+                  `${report.imageUrl}?status=${report.status}&t=${new Date(report.createdAt).getTime()}&f=${report.feedback || 'none'}` : ''}
+                alt="Bukti"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
             </div>
             
@@ -546,10 +551,10 @@ export const ManageReports: React.FC = () => {
 
               <div className="flex-1 overflow-y-auto p-0 md:flex bg-gray-50">
                  <div className="w-full md:w-3/5 bg-black flex items-center justify-center relative min-h-[400px]">
-                    <img 
-                      src={viewReport.imageUrl} 
-                      alt="Full Evidence" 
-                      className="w-full h-full object-contain max-h-[600px]" 
+                    <img
+                      src={viewReport.imageUrl && viewReport.imageUrl.startsWith('data:') ? viewReport.imageUrl : viewReport.imageUrl ? `${viewReport.imageUrl}?status=${viewReport.status}&t=${new Date(viewReport.createdAt).getTime()}&f=${viewReport.feedback || 'none'}` : ''}
+                      alt="Full Evidence"
+                      className="w-full h-full object-contain max-h-[600px]"
                     />
                  </div>
 
